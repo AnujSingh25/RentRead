@@ -1,0 +1,38 @@
+package com.crio.rentread.controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.crio.rentread.dto.User;
+import com.crio.rentread.exceptions.InvalidCredentialsException;
+import com.crio.rentread.exceptions.UserNotRegisteredException;
+import com.crio.rentread.exchanges.LoginUserRequest;
+import com.crio.rentread.exchanges.RegisterUserRequest;
+import com.crio.rentread.services.UserService;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping(UserController.USER_API_ENDPOINT)
+public class UserController {
+    public static final String USER_API_ENDPOINT = "/users";
+
+    @Autowired
+    private UserService userService;
+
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@Valid @RequestBody RegisterUserRequest registerUserRequest) {
+        User registeredUser = userService.registerUser(registerUserRequest);
+        return ResponseEntity.ok().body(registeredUser);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(@Valid @RequestBody LoginUserRequest loginUserRequest) throws InvalidCredentialsException, UserNotRegisteredException {
+        String response = userService.loginUser(loginUserRequest);
+        return ResponseEntity.ok().body(response);
+    }
+}
